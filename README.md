@@ -9,7 +9,7 @@ and produce a set of IPv4 or v6 IP ranges (one per text-output line).
 
 ##Usage
 Written in pure python (with dnspython modules installed), and designed to be both embeddable as a library and usable via unix shell script.
-This should take in a Domain Name and IP_ ersion (ie 4 or 6) as arguments, and produce a list of corresponding IP addresses.
+This should take in a Domain Name and IP Version (ie 4 or 6) as arguments, and produce a list of corresponding IP addresses.
 
 ##Use Case
 My use case is to parse an SPF record into iptables Allow rules - the script should produce a set of records that can be
@@ -18,6 +18,7 @@ SMTP-based email/spam/virus front-end filter (eg Mimecast, Office 365) into an i
 
 Other use cases include access and relay rules on postfix(/sendmail/other smtp), and I have seen examples of spam-Whitelisting
 based on IP (eg allow all gmail.com_spf-validated-IPs to send email).
+With a few minor modifications, there should be no reason that usage this shouldn't be able to be used as a general SPF-to-IP parsing library.
 
 ##Future Usage
 At the moment the scope is simply to produce a whitelisted set of Allowed IPs; a future aim could include
