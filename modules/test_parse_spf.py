@@ -15,7 +15,7 @@ def testme(domain_to_resolve):
     print parse_spf.get_ip_records_for_spf_for_domain(domain_to_resolve)
 
 
-parse_spf.set_module_debug(1)
+parse_spf.set_module_debug(0)
 
 domain_to_resolve = 'mimecast.com'
 testme(domain_to_resolve)
@@ -39,6 +39,15 @@ domain_to_resolve = 'apple.com'
 testme(domain_to_resolve)
 
 domain_to_resolve = 'hooli.xyz'
+testme(domain_to_resolve)
+
+domain_to_resolve = 'sendgrid.com'
+testme(domain_to_resolve)
+
+domain_to_resolve = 'salesforce.com'
+testme(domain_to_resolve)
+
+domain_to_resolve = 'surveymonkey.com'
 testme(domain_to_resolve)
 
 
