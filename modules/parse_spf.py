@@ -14,6 +14,13 @@ import get_DNS
 debug_this_module = 0
 
 
+def set_module_debug(debug_level=0):
+    try:
+        debug_this_module = int(debug_level)
+    except:
+        debug_this_module = 0
+
+
 class IP_Range(object):
     def __init__(self, ip_version, ip_address, subnet_cidr):
         self.ip_version = ip_version
@@ -86,8 +93,10 @@ def _convert_list_of_ip_ranges_to_text(list_of_ip_ranges):
 
 
 def parse_spf_token(orig_token, current_domainname):
-    spf_spf_entry_types = ['all', 'ip4', 'ip6', 'a', 'mx', 'ptr', 'include']
-    # Ignored_spf_entries = {'exp=', 'exists'}
+    spf_spf_entry_types = ['all', 'ip4', 'ip6', 'a', 'mx', 'include']
+    # Ignored_spf_entries = {'exp=', 'exists', 'ptr'}
+    ## These entries are ignored as these are runtime-only checks,
+    ## and it is not possible to determine statically ahead-of-time.
 
     spf_mechanism_types = {'+': 'Allow', '-': 'Disallow', '~': 'SoftFail', '?': 'Neutral'}
     spf_mechanism_types_to_ignore = ['-', '~']
@@ -163,10 +172,6 @@ def parse_valid_spf_token(spf_entry, spf_decision, spf_subnet, spf_data__domain_
         add_to_list = parse_spf_entry_mx(spf_entry, spf_decision, spf_subnet, spf_data__domain_or_IP)
         if add_to_list:
             ret_list.extend(add_to_list)
-    elif spf_entry == 'ptr':
-        add_to_list = parse_spf_entry_ptr(spf_entry, spf_decision, spf_subnet, spf_data__domain_or_IP)
-        if add_to_list:
-            ret_list.extend(add_to_list)
     elif spf_entry == 'include':
         add_to_list = _get_list_of_permitted_ip_ranges_from_dns(spf_data__domain_or_IP)
         if add_to_list:
@@ -204,14 +209,7 @@ def parse_spf_entry_a(spf_entry, spf_decision, spf_subnet, spf_data__domain_or_I
 def parse_spf_entry_mx(spf_entry, spf_decision, spf_subnet, spf_data__domain_or_IP):
     ret_list = []
     for A_record in get_DNS.get_DNS_MX(spf_data__domain_or_IP):
-        ret_list.append(parse_spf_entry_a(spf_entry, spf_decision, spf_subnet, spf_data__domain_or_IP))
-    return ret_list
-
-
-def parse_spf_entry_ptr(spf_entry, spf_decision, spf_subnet, spf_data__domain_or_IP):
-    ret_list = []
-    for A_record in get_DNS.get_DNS_PTR(spf_data__domain_or_IP):
-        ret_list.append(parse_spf_entry_a(spf_entry, spf_decision, spf_subnet, spf_data__domain_or_IP))
+        ret_list.extend(parse_spf_entry_a(spf_entry, spf_decision, spf_subnet, spf_data__domain_or_IP))
     return ret_list
 
 
