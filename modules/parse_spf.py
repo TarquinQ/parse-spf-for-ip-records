@@ -70,7 +70,7 @@ def _get_list_of_permitted_ip_ranges_from_dns(domain_with_spf):
         if 'redirect=' in spf_record:
             replacement_domain = spf_record.split('redirect=', 1)[1].split(' ')[0]
             if _debug_this_module > 1: print "Now redirecting to new DNS record: ", replacement_domain
-            return get_ip_records_for_spf_for_domain(replacement_domain)
+            return _get_list_of_permitted_ip_ranges_from_dns(replacement_domain)
 
         # If we're not replacing:
         for spf_entry in [s for s in spf_record.split(' ') if s]:  # To filter out double-spaces
