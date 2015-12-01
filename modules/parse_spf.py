@@ -11,14 +11,15 @@ from string import split
 import get_DNS
 
 
-debug_this_module = 0
+_debug_this_module = 0
 
 
 def set_module_debug(debug_level=0):
+    global _debug_this_module
     try:
-        debug_this_module = int(debug_level)
+        _debug_this_module = int(debug_level)
     except:
-        debug_this_module = 0
+        _debug_this_module = 0
 
 
 class IP_Range(object):
@@ -57,7 +58,7 @@ def _get_list_of_permitted_ip_ranges_from_dns(domain_with_spf):
     permitted_ip_ranges = []
 
     for text_record in get_DNS.get_DNS_TXT(domain_with_spf):
-        if debug_this_module > 1: print "Now parsing DNS TXT record: ", text_record
+        if _debug_this_module > 1: print "Now parsing DNS TXT record: ", text_record
 
         if not " " in text_record:  # Then it's not an SPF record. This will also filter empty records.
             continue
@@ -68,17 +69,17 @@ def _get_list_of_permitted_ip_ranges_from_dns(domain_with_spf):
         # Special case handling: a Redirect directive, to replace current record with new one.
         if 'redirect=' in spf_record:
             replacement_domain = spf_record.split('redirect=', 1)[1].split(' ')[0]
-            if debug_this_module > 1: print "Now redirecting to new DNS record: ", replacement_domain
+            if _debug_this_module > 1: print "Now redirecting to new DNS record: ", replacement_domain
             return get_ip_records_for_spf_for_domain(replacement_domain)
 
         # If we're not replacing:
         for spf_entry in [s for s in spf_record.split(' ') if s]:  # To filter out double-spaces
-            if debug_this_module > 1: print "Now parsing a possible token: ", spf_entry
+            if _debug_this_module > 1: print "Now parsing a possible token: ", spf_entry
             new_permitted_ip_ranges = parse_spf_token(spf_entry, domain_with_spf)
-            if debug_this_module > 1: print "IP Ranges from token: ", spf_entry, "are", _convert_list_of_ip_ranges_to_text(new_permitted_ip_ranges)
+            if _debug_this_module > 1: print "IP Ranges from token: ", spf_entry, "are", _convert_list_of_ip_ranges_to_text(new_permitted_ip_ranges)
             permitted_ip_ranges.extend(new_permitted_ip_ranges)
 
-    if debug_this_module > 1: print "Permitted IP Ranges for domain \"", domain_with_spf, "\" are ", _convert_list_of_ip_ranges_to_text(permitted_ip_ranges)
+    if _debug_this_module > 1: print "Permitted IP Ranges for domain \"", domain_with_spf, "\" are ", _convert_list_of_ip_ranges_to_text(permitted_ip_ranges)
     return permitted_ip_ranges
 
 
@@ -138,7 +139,7 @@ def parse_spf_token(orig_token, current_domainname):
     else:
         spf_entry = token
 
-    if debug_this_module > 3: print [orig_token, token, spf_entry, spf_decision, spf_subnet, spf_data__domain_or_IP, malformed_entry]
+    if _debug_this_module > 3: print [orig_token, token, spf_entry, spf_decision, spf_subnet, spf_data__domain_or_IP, malformed_entry]
 
     # Now we should only have an valid data
     if malformed_entry:
